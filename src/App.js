@@ -27,6 +27,8 @@ function App() {
 
   const [ left, setLeft ] = useState(3333);
 
+  const [ ftmPrice, setFtmPrice ] = useState(0);
+
   const connectWallet = async () => {
     window.ethereum.request({
       method: "wallet_addEthereumChain",
@@ -72,9 +74,17 @@ function App() {
     });
   };
 
+  const getFTMPrice = async () => {
+    await fetch('https://api.coingecko.com/api/v3/coins/fantom?localization=false').then(async result => {
+      setFtmPrice((await result.json())["market_data"]["current_price"]["usd"])
+      console.log(ftmPrice)
+    })
+  }
+
   const everything = () => {
     getMintPrice();
     getSupply();
+    getFTMPrice();
   };
 
   everything();
@@ -89,7 +99,7 @@ function App() {
       Welcome to the Ultimate Realm
     </h1>
     <p>
-      {`Mint price is currently ${mintPrice || "[loading...]"} FTM.`}
+      {`Mint price is currently ${`${mintPrice} FTM or $${(mintPrice*ftmPrice).toFixed(3)} USD` || "[loading...]"}.`}
     </p>
     <button
       onClick={mintClickHandler}
